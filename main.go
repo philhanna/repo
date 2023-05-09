@@ -1,8 +1,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
+	"os"
+	"strings"
 
 	git "github.com/go-git/go-git/v5"
 )
@@ -11,29 +14,77 @@ import (
 // Functions
 // ---------------------------------------------------------------------
 
-func main() {
-	issuesURL, err := GetIssuesURL()
-	if err != nil {
-		log.Fatalf("Could not get issues URL: %v", err)
+func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, `usage: issues [-h] <path>
+
+issues: Launches a browser window with the "issues" page of the specified repository.
+
+positional arguments:
+  path           local path to repository (default: ".")
+
+options:
+  -h             displays this help text and exits
+`)
 	}
-	_ = issuesURL
+}
+
+func main() {
+	const (
+		GIT_SUFFIX    = ".git"
+		GITHUB_PREFIX = "git@github.com:"
+		MY_PREFIX     = "https://github.com"
+	)
+
+	flag.Parse()
+
+	url, err := GetRemoteURL(".")
+	if err != nil {
+		log.Fatalf("Could not get remote URL: %v", err)
+	}
+
+	if strings.HasSuffix(url, GIT_SUFFIX) {
+		url = strings.TrimSuffix(url, ".git")
+	}
+	if strings.HasPrefix(url, GITHUB_PREFIX) {
+		url = strings.TrimPrefix(url, GITHUB_PREFIX)
+		url = strings.Join([]string{MY_PREFIX, url}, "/")
+	}
+	fmt.Printf("%v\n", url)
+
 	// browser.OpenURL(issuesURL)
 }
 
-func GetIssuesURL() (any, error) {
-	
-	// Get a pointer to the repository
+func GetRemoteURL(path string) (string, error) {
 
-	repo, err := git.PlainOpen(".")
+	repo, err := GetRepository(path)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	
+
+	// From the repository, get the origin remote
 	remote, err := repo.Remote("origin")
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	fmt.Printf("DEBUG: remote=%v\n", remote)
-	return nil, nil
+	// Return the first URL
+	url := remote.Config().URLs[0]
+
+	return url, nil
+}
+
+// GetRepository returns a pointer to the specified repository
+func GetRepository(path string) (*git.Repository, error) {
+	repo, err := git.PlainOpen(path)
+	if err != nil {
+		return nil, err
+	}
+	return repo, nil
+}
+
+
+func GetRemote(repo *git.Repository) (*git.Remote, error) {
+	remote, err := repo.Remote("origin")
+	return remote, err
 }
