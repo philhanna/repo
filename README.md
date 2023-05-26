@@ -9,7 +9,14 @@ Studio Code's integrated terminal) in the repository.
 
 ### Usage:
 ```bash
-issues [<path>] [<issueNumber>]
+usage: issues [OPTIONS] [ISSUE]
+Launches a browser window with the "issues" page of the specified repository.
+
+positional arguments:
+  issue          the integer issue number (optional)
+
+options:
+  -h             displays this help text and exits
 ```
 
 
