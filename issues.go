@@ -27,11 +27,10 @@ const (
 
 func init() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `usage: issues [OPTIONS] [PATH]
+		fmt.Fprintf(os.Stderr, `usage: issues [OPTIONS] [ISSUE]
 Launches a browser window with the "issues" page of the specified repository.
 
 positional arguments:
-  path           local path to repository (default: ".")
   issue          the integer issue number (optional)
 
 options:
@@ -46,24 +45,15 @@ func IsInteger(s string) bool {
 
 func main() {
 
-	var path string
 	var issue string
 
 	// Get command line arguments
 	flag.Parse()
-	args := flag.Args()
-	switch len(args) {
-	case 1:
-		switch IsInteger(args[0]) {
-		case true:
-			issue = args[0]
-		case false:
-			path = args[0]
-		}
-	case 2:
-		path = args[0]
-		issue = args[1]
+	if flag.NArg() > 0 {
+		issue = flag.Arg(0)
 	}
+
+	path := "."
 
 	// Get the repository at that path
 	repo, err := git.PlainOpen(path)
@@ -90,7 +80,9 @@ func main() {
 	case strings.HasPrefix(url, GITHUB_PREFIX):
 		url = GetURLFromGitURL(url)
 	case strings.HasPrefix(url, HTTP_PREFIX):
+		// OK
 	case strings.HasPrefix(url, HTTPS_PREFIX):
+		// OK
 	default:
 		log.Fatalf("Unsupported url type: %s\n", url)
 	}
