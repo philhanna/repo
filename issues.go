@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/pkg/browser"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+
+	"github.com/pkg/browser"
 
 	git "github.com/go-git/go-git/v5"
 )
@@ -37,6 +39,10 @@ options:
 `)
 	}
 }
+func IsInteger(s string) bool {
+	_, err := strconv.Atoi(s)
+	return err == nil
+}
 
 func main() {
 
@@ -45,11 +51,18 @@ func main() {
 
 	// Get command line arguments
 	flag.Parse()
-	if flag.NArg() > 0 {
-		path = flag.Arg(0)
-	}
-	if flag.NArg() > 1 {
-		issue = flag.Arg(1)
+	args := flag.Args()
+	switch len(args) {
+	case 1:
+		switch IsInteger(args[0]) {
+		case true:
+			issue = args[0]
+		case false:
+			path = args[0]
+		}
+	case 2:
+		path = args[0]
+		issue = args[1]
 	}
 
 	// Get the repository at that path
