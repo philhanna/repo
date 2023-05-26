@@ -30,6 +30,7 @@ Launches a browser window with the "issues" page of the specified repository.
 
 positional arguments:
   path           local path to repository (default: ".")
+  issue          the integer issue number (optional)
 
 options:
   -h             displays this help text and exits
@@ -39,9 +40,17 @@ options:
 
 func main() {
 
+	var path string
+	var issue string
+
 	// Get command line arguments
 	flag.Parse()
-	path := flag.Arg(0)
+	if flag.NArg() > 0 {
+		path = flag.Arg(0)
+	}
+	if flag.NArg() > 1 {
+		issue = flag.Arg(1)
+	}
 
 	// Get the repository at that path
 	repo, err := git.PlainOpen(path)
@@ -73,7 +82,14 @@ func main() {
 		log.Fatalf("Unsupported url type: %s\n", url)
 	}
 
-	issuesURL := strings.Join([]string{url, "issues"}, "/")
+	parts := []string{
+		url,
+		"issues",
+	}
+	if issue != "" {
+		parts = append(parts, issue)
+	}
+	issuesURL := strings.Join(parts, "/")
 
 	browser.OpenURL(issuesURL)
 }
