@@ -87,14 +87,10 @@ func main() {
 		log.Fatalf("Unsupported url type: %s\n", url)
 	}
 
-	parts := []string{
-		url,
-		"issues",
-	}
+	issuesURL := url + "/issues"
 	if issue != "" {
-		parts = append(parts, issue)
+		issuesURL += "/" + issue
 	}
-	issuesURL := strings.Join(parts, "/")
 
 	browser.OpenURL(issuesURL)
 }
