@@ -27,14 +27,15 @@ const (
 // Functions
 // ---------------------------------------------------------------------
 
+// init sets up the usage text
 func init() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, `usage: issues [OPTIONS] [ISSUE]
 Launches a browser window with the "issues" page of the specified repository.
 
 positional arguments:
-  issue          The issue number (optional). This can be` +
-`
+  issue          The issue number (optional). This can be`+
+			`
 		- An integer, e.g., "35"
 		- An integer with a # prefix, e.g., "#35"
 		- A branch name, e.g., "issue#35"
@@ -46,10 +47,12 @@ options:
 	}
 }
 
+// parseIssueNumber extracts a number from a string parameter, if there
+// is one.  Returns NO_ISSUE, if not.
 func parseIssueNumber(s string) int {
 	re := regexp.MustCompile(`#?(\d+)`)
 	m := re.FindSubmatch([]byte(s))
-	if m == nil || len(m) < 2{
+	if m == nil || len(m) < 2 {
 		return NO_ISSUE
 	}
 	mString := string(m[1])
@@ -60,8 +63,8 @@ func parseIssueNumber(s string) int {
 func main() {
 
 	var (
-		err   error
-		issue int
+		err   error = nil
+		issue int = NO_ISSUE
 	)
 
 	// Get command line arguments
@@ -104,11 +107,13 @@ func main() {
 		log.Fatalf("Unsupported url type: %s\n", url)
 	}
 
+	// Append the issue number, if one was specified
 	issuesURL := url + "/issues"
 	if issue != NO_ISSUE {
 		issuesURL = fmt.Sprintf("%s/%d", issuesURL, issue)
 	}
 
+	// Display the issue page in the browser
 	browser.OpenURL(issuesURL)
 }
 
