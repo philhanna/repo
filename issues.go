@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -19,6 +20,7 @@ const (
 	HTTP_PREFIX   = "http:"
 	HTTPS_PREFIX  = "https:"
 	MY_PREFIX     = "https://github.com"
+	NO_ISSUE      = -1
 )
 
 // ---------------------------------------------------------------------
@@ -31,26 +33,40 @@ func init() {
 Launches a browser window with the "issues" page of the specified repository.
 
 positional arguments:
-  issue          the integer issue number (optional)
+  issue          The issue number (optional). This can be
+                 - An integer, e.g., "35"
+				 - An integer with a # prefix, e.g., "#35"
+				 - A branch name, e.g., "issue#35"
+				 - A branch name with a non-numeric suffix, e.g., "defect#35-rename"
 
 options:
-  -h             displays this help text and exits
+  -h             Displays this help text and exits
 `)
 	}
 }
-func IsInteger(s string) bool {
-	_, err := strconv.Atoi(s)
-	return err == nil
+
+func parseIssueNumber(s string) int {
+	re := regexp.MustCompile(`#?(\d+)`)
+	m := re.FindSubmatch([]byte(s))
+	if m == nil || len(m) < 2{
+		return NO_ISSUE
+	}
+	mString := string(m[1])
+	issue, _ := strconv.Atoi(mString)
+	return issue
 }
 
 func main() {
 
-	var issue string
+	var (
+		err   error
+		issue int
+	)
 
 	// Get command line arguments
 	flag.Parse()
 	if flag.NArg() > 0 {
-		issue = flag.Arg(0)
+		issue = parseIssueNumber(flag.Arg(0))
 	}
 
 	path := "."
@@ -88,8 +104,8 @@ func main() {
 	}
 
 	issuesURL := url + "/issues"
-	if issue != "" {
-		issuesURL += "/" + issue
+	if issue != NO_ISSUE {
+		issuesURL = fmt.Sprintf("%s/%d", issuesURL, issue)
 	}
 
 	browser.OpenURL(issuesURL)
