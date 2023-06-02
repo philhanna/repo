@@ -1,4 +1,4 @@
-module github.com/philhanna/issues
+module github.com/philhanna/repo
 
 go 1.20
 

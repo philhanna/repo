@@ -12,8 +12,8 @@ func Test_parseIssueNumber(t *testing.T) {
 		s    string
 		want int
 	}{
-		{"Empty string", "", NO_ISSUE},
-		{"No digits string", "bogus", NO_ISSUE},
+		{"Empty string", "", BAD_ISSUE},
+		{"No digits string", "bogus", BAD_ISSUE},
 		{"Simple integer", "3", 3},
 		{"Multidigit integer", "35", 35},
 		{"With octothorpe", "#35", 35},
@@ -24,7 +24,7 @@ func Test_parseIssueNumber(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			want := tt.want
-			have := parseIssueNumber(tt.s)
+			have := ParseIssueNumber(tt.s)
 			assert.Equal(t, want, have)
 		})
 	}
