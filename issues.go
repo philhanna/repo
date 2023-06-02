@@ -64,7 +64,7 @@ func main() {
 
 	var (
 		err   error = nil
-		issue int = NO_ISSUE
+		issue int   = NO_ISSUE
 	)
 
 	// Get command line arguments

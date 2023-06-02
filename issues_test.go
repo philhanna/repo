@@ -9,7 +9,7 @@ import (
 func Test_parseIssueNumber(t *testing.T) {
 	tests := []struct {
 		name string
-		s string
+		s    string
 		want int
 	}{
 		{"Empty string", "", NO_ISSUE},
