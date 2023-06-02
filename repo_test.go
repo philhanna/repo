@@ -12,7 +12,7 @@ func Test_parseIssueNumber(t *testing.T) {
 		s    string
 		want int
 	}{
-		{"Empty string", "", BAD_ISSUE},
+		{"Empty string", "", ALL_ISSUES_PAGE},
 		{"No digits string", "bogus", BAD_ISSUE},
 		{"Simple integer", "3", 3},
 		{"Multidigit integer", "35", 35},
