@@ -105,13 +105,13 @@ func main() {
 	}
 
 	// Append the issue number, if one was specified
-	issuesURL := url + "/issues"
+	url = url + "/issues"
 	if issue != NO_ISSUE {
-		issuesURL = fmt.Sprintf("%s/%d", issuesURL, issue)
+		url = fmt.Sprintf("%s/%d", url, issue)
 	}
 
-	// Display the issue page in the browser
-	browser.OpenURL(issuesURL)
+	// Display the page in the browser
+	browser.OpenURL(url)
 }
 
 // GetURLFromGitURL changes a git@github.com: prefix to https://github.com
