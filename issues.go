@@ -62,10 +62,7 @@ func parseIssueNumber(s string) int {
 
 func main() {
 
-	var (
-		err   error = nil
-		issue int   = NO_ISSUE
-	)
+	var issue = NO_ISSUE
 
 	// Get command line arguments
 	flag.Parse()
