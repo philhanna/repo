@@ -34,15 +34,15 @@ func init() {
 Launches a browser window with the "issues" page of the specified repository.
 
 positional arguments:
-  issue          The issue number (optional). This can be`+
-			`
-		- An integer, e.g., "35"
-		- An integer with a # prefix, e.g., "#35"
-		- A branch name, e.g., "issue#35"
-		- A branch name with a non-numeric suffix, e.g., "defect#35-rename"
+  issue          The issue number (optional). This can be:
+    - An integer, e.g., "35"
+    - An integer with a # prefix, e.g., "#35"
+    - A branch name, e.g., "issue#35"
+    - A branch name with a non-numeric suffix, e.g., "defect#35-rename"
 
 options:
   -h             Displays this help text and exits
+  -r             Display main repository page only
 `)
 	}
 }
@@ -62,14 +62,19 @@ func parseIssueNumber(s string) int {
 
 func main() {
 
-	var issue = NO_ISSUE
+	issue := NO_ISSUE
+	repoFlag := false
 
 	// Get command line arguments
+	flag.BoolVar(&repoFlag, "r", false, "Display repository only")
 	flag.Parse()
+
+	// Get issue number, if specified
 	if flag.NArg() > 0 {
 		issue = parseIssueNumber(flag.Arg(0))
 	}
 
+	// This directory
 	path := "."
 
 	// Get the repository at that path
@@ -104,10 +109,12 @@ func main() {
 		log.Fatalf("Unsupported url type: %s\n", url)
 	}
 
-	// Append the issue number, if one was specified
-	url = url + "/issues"
-	if issue != NO_ISSUE {
-		url = fmt.Sprintf("%s/%d", url, issue)
+	// Append the issue number, if one was specified, or display the repo only
+	if !repoFlag {
+		url = url + "/issues"
+		if issue != NO_ISSUE {
+			url = fmt.Sprintf("%s/%d", url, issue)
+		}
 	}
 
 	// Display the page in the browser
