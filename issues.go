@@ -33,11 +33,12 @@ func init() {
 Launches a browser window with the "issues" page of the specified repository.
 
 positional arguments:
-  issue          The issue number (optional). This can be
-                 - An integer, e.g., "35"
-				 - An integer with a # prefix, e.g., "#35"
-				 - A branch name, e.g., "issue#35"
-				 - A branch name with a non-numeric suffix, e.g., "defect#35-rename"
+  issue          The issue number (optional). This can be` +
+`
+		- An integer, e.g., "35"
+		- An integer with a # prefix, e.g., "#35"
+		- A branch name, e.g., "issue#35"
+		- A branch name with a non-numeric suffix, e.g., "defect#35-rename"
 
 options:
   -h             Displays this help text and exits
