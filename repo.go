@@ -21,7 +21,7 @@ const (
 	HTTPS_PREFIX    = "https:"
 	MY_PREFIX       = "https://github.com"
 	ALL_ISSUES_PAGE = 0
-	BAD_ISSUE       = -1
+	NO_ISSUE        = -1
 )
 
 // ---------------------------------------------------------------------
@@ -50,7 +50,7 @@ options:
 
 func main() {
 
-	issue := BAD_ISSUE
+	issue := NO_ISSUE
 	issueFlag := false
 
 	// Get command line arguments
@@ -71,7 +71,7 @@ func main() {
 		option = SPECIFIC_ISSUE
 		issueString := flag.Arg(0)
 		issue = ParseIssueNumber(issueString)
-		if issue == BAD_ISSUE || issue == ALL_ISSUES_PAGE {
+		if issue == NO_ISSUE || issue == ALL_ISSUES_PAGE {
 			option = REPO_ONLY
 		}
 	case issueFlag:
@@ -96,6 +96,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// From the repository, get the branch name
+	branchName := GetBranchName(*repo)
 
 	// From the remote, get the first configured URL
 	url := remote.Config().URLs[0]
@@ -123,6 +126,10 @@ func main() {
 		// URL is already OK
 	case ALL_ISSUES:
 		url += "/issues"
+		branchIssue := ParseIssueNumber(branchName)
+		if branchIssue != NO_ISSUE {
+			url += fmt.Sprintf("/%d", branchIssue)
+		}
 	case SPECIFIC_ISSUE:
 		url += "/issues"
 		url += fmt.Sprintf("/%d", issue)
@@ -132,6 +139,23 @@ func main() {
 
 	// Display the page in the browser
 	browser.OpenURL(url)
+}
+
+// GetBranchName returns a string representing the current branch in the
+// specified repository.
+func GetBranchName(repo git.Repository) string {
+
+	// Retrieve the current branch reference:
+	ref, err := repo.Head()
+	if err != nil {
+		log.Println("Could not get the HEAD reference")
+		log.Fatal(err)
+	}
+
+	// Extract the branch name from the reference
+	branchName := ref.Name().Short()
+
+	return branchName
 }
 
 // GetURLFromGitURL changes a git@github.com: prefix to https://github.com
@@ -151,7 +175,7 @@ func ParseIssueNumber(s string) int {
 	re := regexp.MustCompile(`#?(\d+)`)
 	m := re.FindSubmatch([]byte(s))
 	if m == nil || len(m) < 2 {
-		return BAD_ISSUE
+		return NO_ISSUE
 	}
 	mString := string(m[1])
 	issue, _ := strconv.Atoi(mString)
