@@ -43,7 +43,8 @@ positional parameters:
 
 options:
   -h             Displays this help text and exits
-  -i             Display the main issues page
+  -i             Display the main issues page. If the current branch contains
+                 an issue number, use that.
 `)
 	}
 }
