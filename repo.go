@@ -15,16 +15,17 @@ import (
 )
 
 const (
-	GIT_SUFFIX       = ".git"
-	GITHUB_PREFIX    = "git@github.com:"
-	GITEA_PREFIX     = "ssh://git@localhost"
-	HTTP_PREFIX      = "http:"
-	HTTPS_PREFIX     = "https:"
-	MY_GITHUB_PREFIX = "https://github.com"
-	MY_GITEA_PREFIX  = "http://localhost:3000"
-	ALL_ISSUES_PAGE  = 0
-	NO_ISSUE         = -1
+	GIT_SUFFIX      = ".git"
+	ALL_ISSUES_PAGE = 0
+	NO_ISSUE        = -1
 )
+
+var prefixes = map[string]string{
+	"git@github.com":      "https://github.com",
+	"ssh://git@localhost": "http://localhost:3000",
+	"https:":              "",
+	"http:":               "",
+}
 
 // ---------------------------------------------------------------------
 // Functions
@@ -112,16 +113,15 @@ func main() {
 	}
 
 	// Handle this URL according to its type:
-	switch {
-	case strings.HasPrefix(url, GITHUB_PREFIX):
-		url = GetURLFromGitURL(url)
-	case strings.HasPrefix(url, GITEA_PREFIX):
-		url = GetURLFromGiteaURL(url)
-	case strings.HasPrefix(url, HTTP_PREFIX):
-		// OK
-	case strings.HasPrefix(url, HTTPS_PREFIX):
-		// OK
-	default:
+	found := false
+	for k, v := range prefixes {
+		if strings.HasPrefix(url, k) {
+			url = SwapPrefix(url, k, v)
+			found = true
+			break
+		}
+	}
+	if !found {
 		log.Fatalf("Unsupported url type: %s\n", url)
 	}
 
@@ -163,20 +163,6 @@ func GetBranchName(repo git.Repository) string {
 	return branchName
 }
 
-// GetURLFromGitURL changes a git@github.com: prefix to https://github.com
-func GetURLFromGitURL(url string) string {
-	url = strings.TrimPrefix(url, GITHUB_PREFIX)
-	url = strings.Join([]string{MY_GITHUB_PREFIX, url}, "/")
-	return url
-}
-
-// GetURLFromGiteaURL changes a ssh://git@localhost prefix to http://localhost:3000
-func GetURLFromGiteaURL(url string) string {
-	url = strings.TrimPrefix(url, GITEA_PREFIX)
-	url = strings.Join([]string{MY_GITEA_PREFIX, url}, "/")
-	return url
-}
-
 // ParseIssueNumber extracts a number from a string parameter, if there
 // is one.  Returns NO_ISSUE, if not.
 func ParseIssueNumber(s string) int {
@@ -192,4 +178,12 @@ func ParseIssueNumber(s string) int {
 	mString := string(m[1])
 	issue, _ := strconv.Atoi(mString)
 	return issue
+}
+
+// SwapPrefix substitutes the usable URL prefix for the one used in the
+// git remote value
+func SwapPrefix(url, fromPrefix, toPrefix string) string {
+	url = strings.TrimPrefix(url, fromPrefix)
+	url = strings.Join([]string{toPrefix, url}, "/")
+	return url
 }
