@@ -15,13 +15,15 @@ import (
 )
 
 const (
-	GIT_SUFFIX      = ".git"
-	GITHUB_PREFIX   = "git@github.com:"
-	HTTP_PREFIX     = "http:"
-	HTTPS_PREFIX    = "https:"
-	MY_PREFIX       = "https://github.com"
-	ALL_ISSUES_PAGE = 0
-	NO_ISSUE        = -1
+	GIT_SUFFIX       = ".git"
+	GITHUB_PREFIX    = "git@github.com:"
+	GITEA_PREFIX     = "ssh://git@localhost"
+	HTTP_PREFIX      = "http:"
+	HTTPS_PREFIX     = "https:"
+	MY_GITHUB_PREFIX = "https://github.com"
+	MY_GITEA_PREFIX  = "http://localhost:3000"
+	ALL_ISSUES_PAGE  = 0
+	NO_ISSUE         = -1
 )
 
 // ---------------------------------------------------------------------
@@ -113,6 +115,8 @@ func main() {
 	switch {
 	case strings.HasPrefix(url, GITHUB_PREFIX):
 		url = GetURLFromGitURL(url)
+	case strings.HasPrefix(url, GITEA_PREFIX):
+		url = GetURLFromGiteaURL(url)
 	case strings.HasPrefix(url, HTTP_PREFIX):
 		// OK
 	case strings.HasPrefix(url, HTTPS_PREFIX):
@@ -162,7 +166,14 @@ func GetBranchName(repo git.Repository) string {
 // GetURLFromGitURL changes a git@github.com: prefix to https://github.com
 func GetURLFromGitURL(url string) string {
 	url = strings.TrimPrefix(url, GITHUB_PREFIX)
-	url = strings.Join([]string{MY_PREFIX, url}, "/")
+	url = strings.Join([]string{MY_GITHUB_PREFIX, url}, "/")
+	return url
+}
+
+// GetURLFromGiteaURL changes a ssh://git@localhost prefix to http://localhost:3000
+func GetURLFromGiteaURL(url string) string {
+	url = strings.TrimPrefix(url, GITEA_PREFIX)
+	url = strings.Join([]string{MY_GITEA_PREFIX, url}, "/")
 	return url
 }
 
