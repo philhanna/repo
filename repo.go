@@ -21,10 +21,10 @@ const (
 )
 
 var prefixes = map[string]string{
-	"git@github.com":      "https://github.com",
-	"ssh://git@localhost": "http://localhost:3000",
-	"https:":              "",
-	"http:":               "",
+	"git@github.com":       "https://github.com",
+	"ssh://git@localhost/": "http://localhost:3000",
+	"https:":               "",
+	"http:":                "",
 }
 
 // ---------------------------------------------------------------------
