@@ -45,8 +45,8 @@ positional parameters:
                  - A branch name with a non-numeric suffix, e.g., "defect#35-rename"
 
 options:
-  -h             Displays this help text and exits
-  -i             Display the main issues page. If the current branch contains
+  -h, --help     Displays this help text and exits
+  -i, --issues   Display the main issues page. If the current branch contains
                  an issue number, use that.
 `)
 	}
@@ -59,6 +59,7 @@ func main() {
 
 	// Get command line arguments
 	flag.BoolVar(&issueFlag, "i", false, "Display the main issues page")
+	flag.BoolVar(&issueFlag, "issues", false, "Display the main issues page")
 	flag.Parse()
 
 	type Option byte
