@@ -47,15 +47,15 @@ remote, which is usually `origin`.  It needs to transform the remote name
 by modifying its prefix. This is done with a map of remote prefixes
 to url prefixes.
 
-This map is stored in a configuration file
+This map is stored in a configuration file.
 
 Create a subdirectory named `repo` in your user configuration directory, which is:
 ```
 On Linux/Mac: $HOME/.config/repo
 On Windows:   %USERPROFILE%\AppData\Roaming\repo
 ```
-Copy `config.yaml` to that directory and add any changes that you encounter
-with any of your local repositories. 
+Copy `config.yaml` to that directory and make any changes needed to recognize
+anything different in the remotes of your local repositories. 
 
 [idGoReportCard]: https://goreportcard.com/report/github.com/philhanna/repo
 [idPkgGoDev]: https://pkg.go.dev/github.com/philhanna/repo
