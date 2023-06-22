@@ -8,10 +8,26 @@ import (
 	"path/filepath"
 )
 
+// ---------------------------------------------------------------------
+// Type definitions
+// ---------------------------------------------------------------------
+
+type Config struct {
+	PREFIXES map[string]string `yaml:"prefixes"`
+}
+
+// ---------------------------------------------------------------------
+// Constants and variables
+// ---------------------------------------------------------------------
+
 const PACKAGE_NAME = "repo"
 
 // go:embed config.yaml
-var DEFAULT_MAP_DATA []byte
+var DEFAULT_CONFIG_DATA []byte
+
+// ---------------------------------------------------------------------
+// Functions
+// ---------------------------------------------------------------------
 
 // GetPrefixMap returns a map of git remote prefixes to URL prefixes
 // that are needed to find the actual repository on the web.  It will
@@ -20,21 +36,24 @@ var DEFAULT_MAP_DATA []byte
 // the current directory
 func GetPrefixMap() map[string]string {
 
+	var err error
+	var configData []byte
+
 	// Create an empty map
 	prefixMap := new(map[string]string)
 
 	// Look for a local YAML file with the configuration
 	configDir, _ := os.UserConfigDir()
 	filename := filepath.Join(configDir, PACKAGE_NAME, "config.yaml")
-	prefixMapData, err := os.ReadFile(filename)
+	configData, err = os.ReadFile(filename)
 
 	// If there is no local file, use the default values
 	if err != nil {
-		prefixMapData = DEFAULT_MAP_DATA
+		configData = DEFAULT_CONFIG_DATA
 	}
 
 	// Now create a map of prefixes to substitution values
-	err = yaml.Unmarshal(prefixMapData, prefixMap)
+	err = yaml.Unmarshal(configData, prefixMap)
 	if err != nil {
 		log.Fatal(err)
 	}

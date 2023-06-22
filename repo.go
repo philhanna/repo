@@ -20,19 +20,13 @@ const (
 	NO_ISSUE        = -1
 )
 
-var prefixes = map[string]string{
-	"git@github.com:":     "https://github.com",
-	"ssh://git@localhost": "http://localhost:3000",
-	"https:":              "https:",
-	"http:":               "http:",
-}
-
 // ---------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------
 
-// init sets up the usage text
+// init sets up the usage text and logging defaults
 func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, `usage: repo [OPTIONS] [ISSUE]
 Launches a browser window for a page of the git remote repository.
@@ -114,6 +108,7 @@ func main() {
 	}
 
 	// Handle this URL according to its type:
+	prefixes := GetPrefixMap()
 	found := false
 	for prefix, newPrefix := range prefixes {
 		if strings.HasPrefix(url, prefix) {
