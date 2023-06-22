@@ -1,5 +1,5 @@
 prefixes:
     "http:": "http:"
     "https:": "https:"
-    "git@github.com:": "https://github.com"
+    "git@github.com:": "https://github.com/"
     "ssh://git@localhost": "http://localhost:3000"
