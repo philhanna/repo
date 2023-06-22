@@ -39,7 +39,7 @@ cd to a temporary directory and download the repository, then install it:
 ```bash
 git clone git@github.com:/philhanna/repo
 cd repo
-go install repo/repo.go
+go install .
 ```
 ## Configuration:
 The program gets the URL to display by using the repository's main
