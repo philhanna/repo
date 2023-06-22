@@ -39,9 +39,6 @@ func GetPrefixMap() map[string]string {
 	var err error
 	var configData []byte
 
-	// Create an empty map
-	prefixMap := new(map[string]string)
-
 	// Look for a local YAML file with the configuration
 	configDir, _ := os.UserConfigDir()
 	filename := filepath.Join(configDir, PACKAGE_NAME, "config.yaml")
@@ -53,10 +50,11 @@ func GetPrefixMap() map[string]string {
 	}
 
 	// Now create a map of prefixes to substitution values
-	err = yaml.Unmarshal(configData, prefixMap)
+	config := new(Config)
+	err = yaml.Unmarshal(configData, config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return *prefixMap
+	return config.PREFIXES
 }
