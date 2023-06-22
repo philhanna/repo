@@ -1,11 +1,11 @@
 package main
 
 import (
+	_ "embed"
+	yaml "gopkg.in/yaml.v2"
 	"log"
 	"os"
 	"path/filepath"
-	_ "embed"
-	yaml "gopkg.in/yaml.v2"
 )
 
 const PACKAGE_NAME = "repo"
