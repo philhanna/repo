@@ -21,10 +21,10 @@ const (
 )
 
 var prefixes = map[string]string{
-	"git@github.com":       "https://github.com",
-	"ssh://git@localhost/": "http://localhost:3000",
-	"https:":               "",
-	"http:":                "",
+	"git@github.com:":     "https://github.com",
+	"ssh://git@localhost": "http://localhost:3000",
+	"https:":              "https:",
+	"http:":               "http:",
 }
 
 // ---------------------------------------------------------------------
@@ -114,9 +114,9 @@ func main() {
 
 	// Handle this URL according to its type:
 	found := false
-	for k, v := range prefixes {
-		if strings.HasPrefix(url, k) {
-			url = SwapPrefix(url, k, v)
+	for prefix, newPrefix := range prefixes {
+		if strings.HasPrefix(url, prefix) {
+			url = SwapPrefix(url, prefix, newPrefix)
 			found = true
 			break
 		}
@@ -184,6 +184,6 @@ func ParseIssueNumber(s string) int {
 // git remote value
 func SwapPrefix(url, fromPrefix, toPrefix string) string {
 	url = strings.TrimPrefix(url, fromPrefix)
-	url = strings.Join([]string{toPrefix, url}, "/")
+	url = toPrefix + url
 	return url
 }
