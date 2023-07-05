@@ -16,7 +16,7 @@ import (
 // specified repository.
 func GetBranchName(repository git.Repository) string {
 
-	// Retrieve the current branch reference:
+	// Retrieve the current branch reference
 
 	ref, err := repository.Head()
 	if err != nil {
@@ -36,7 +36,6 @@ func GetBranchName(repository git.Repository) string {
 func GetURL() string {
 
 	cmd := ParseCommandLine()
-	fmt.Printf("cmd=%s\n", cmd)
 
 	// Get the repository at that path
 
