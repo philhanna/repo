@@ -105,7 +105,7 @@ func GetURL() string {
 }
 
 // SwapPrefix substitutes the usable URL prefix for the one used in the
-// git remote value
+// git remote value.
 func SwapPrefix(url, fromPrefix, toPrefix string) string {
 	url = strings.TrimPrefix(url, fromPrefix)
 	url = toPrefix + url
