@@ -20,6 +20,15 @@ type CommandLine struct {
 	Path        string
 }
 
+func (cmd CommandLine) String() string {
+	parts := []string{
+		fmt.Sprintf("issueFlag=%t", cmd.issueFlag),
+		fmt.Sprintf("IssueNumber=%d", cmd.IssueNumber),
+		fmt.Sprintf("Path=%v", cmd.Path),
+	}
+	return strings.Join(parts, ",")
+}
+
 // ---------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------
@@ -74,7 +83,7 @@ func ParseCommandLine() *CommandLine {
 }
 
 // ParseIssueNumber extracts a number from a string parameter, if there
-// is one.  Returns NO_ISSUE, if not.
+// is one.  Returns 0, if not.
 func ParseIssueNumber(s string) int {
 	if s == "" {
 		return 0

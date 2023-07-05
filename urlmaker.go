@@ -8,23 +8,17 @@ import (
 	git "github.com/go-git/go-git/v5"
 )
 
-const (
-	GIT_SUFFIX      = ".git"
-	ALL_ISSUES_PAGE = 0
-	NO_ISSUE        = -1
-)
-
 // ---------------------------------------------------------------------
 // Functions
 // ---------------------------------------------------------------------
 
 // GetBranchName returns a string representing the current branch in the
 // specified repository.
-func GetBranchName(repo git.Repository) string {
+func GetBranchName(repository git.Repository) string {
 
 	// Retrieve the current branch reference:
 
-	ref, err := repo.Head()
+	ref, err := repository.Head()
 	if err != nil {
 		log.Println("Could not get the HEAD reference")
 		log.Fatal(err)
@@ -42,6 +36,7 @@ func GetBranchName(repo git.Repository) string {
 func GetURL() string {
 
 	cmd := ParseCommandLine()
+	fmt.Printf("cmd=%s\n", cmd)
 
 	// Get the repository at that path
 
