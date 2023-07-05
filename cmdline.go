@@ -49,7 +49,7 @@ positional parameters:
 
 options:
   -h, --help     Displays this help text and exits
-  -i, --issues   Display the main issues page. If the current branch contains
+  -i, --issue    Display the main issues page. If the current branch contains
                  an issue number, use that.
   -p, --path     Path to local repository (Default is ".")
 `)
@@ -63,7 +63,7 @@ func ParseCommandLine() *CommandLine {
 
 	// Get command line arguments
 	flag.BoolVar(&cmd.issueFlag, "i", false, "Display the main issues page")
-	flag.BoolVar(&cmd.issueFlag, "issues", false, "Display the main issues page")
+	flag.BoolVar(&cmd.issueFlag, "issue", false, "Display the main issues page")
 	flag.StringVar(&cmd.Path, "p", "", `Path to local repository (Default=".")`)
 	flag.StringVar(&cmd.Path, "path", "", `Path to local repository (Default=".")`)
 
