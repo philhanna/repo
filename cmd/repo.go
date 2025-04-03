@@ -25,7 +25,8 @@ func main() {
 	}
 	defer nullFile.Close()
 
-	os.Stderr = nullFile
+	browser.Stderr = nullFile
+	browser.Stdout = nullFile
 
 	// Open the browser window
 	browser.OpenURL(url)
