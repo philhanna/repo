@@ -119,13 +119,13 @@ branch-derived issue routing were intentionally introduced.
 
 The Python implementation is ready to replace the Go version when:
 
-- [ ] All 19+ automated tests pass (`pytest -q`).
-- [ ] Manual smoke test: `repo` opens repository home page from a real git repo.
-- [ ] Manual smoke test: `repo --issue` opens the issues page.
-- [ ] Manual smoke test: `repo 35` opens issue #35.
-- [ ] Manual smoke test: branch-derived issue number is used when `--issue` is
+- [x] All 19+ automated tests pass (`pytest -q`).
+- [x] Manual smoke test: `repo` opens repository home page from a real git repo.
+- [x] Manual smoke test: `repo --issue` opens the issues page.
+- [x] Manual smoke test: `repo 35` opens issue #35.
+- [x] Manual smoke test: branch-derived issue number is used when `--issue` is
       set and no explicit number is given.
-- [ ] Verified on Linux.
+- [x] Verified on Linux.
 - [ ] Verified on macOS or Windows.
 
 [idGoReportCard]: https://goreportcard.com/report/github.com/philhanna/repo

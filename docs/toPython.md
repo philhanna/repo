@@ -117,11 +117,11 @@
 - [x] Define cutover criteria (all tests passing + manual smoke tests on Linux and Windows/macOS).
 
 ## Phase 7: Validation Checklist (Pre-Cutover)
-- [ ] Running `repo` from a git repository opens the repository home page.
-- [ ] Running `repo --issue` opens issues page (or issue page when number available).
-- [ ] Branch-derived issue number parsing matches existing behavior.
-- [ ] User config overrides default prefix mappings.
-- [ ] Behavior is verified in at least one Linux and one non-Linux environment.
+- [x] Running `repo` from a git repository opens the repository home page.
+- [x] Running `repo --issue` opens issues page (or issue page when number available).
+- [x] Branch-derived issue number parsing matches existing behavior.
+- [x] User config overrides default prefix mappings.
+- [x] Behavior is verified in at least one Linux and one non-Linux environment.
 
 ## Suggested Implementation Order
 - [x] 1) Build `parse_issue_number()` + tests.
