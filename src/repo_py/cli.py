@@ -18,7 +18,7 @@ def parse_issue_number(value: str) -> int:
     """Extract the first issue number from a string; return 0 if not found."""
     if not value:
         return 0
-    match = re.search(r"#?(\\d+)", value.upper())
+    match = re.search(r"#?(\d+)", value.upper())
     if not match:
         return 0
     return int(match.group(1))

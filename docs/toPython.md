@@ -72,43 +72,43 @@
 - [x] Added packaged default config file at `src/repo_py/config.yaml` for fallback behavior parity.
 
 ## Phase 3: Implement Core Modules
-- [ ] Implement CLI parsing in `cli.py` using `argparse`:
-  - [ ] Support positional `issue` input.
-  - [ ] Support `-i/--issue`.
-  - [ ] Support `-p/--path` with default `.`.
-  - [ ] Reproduce help text closely.
-- [ ] Implement `parse_issue_number()` in `cli.py` with regex behavior matching Go logic.
-- [ ] Implement config loading in `config.py`:
-  - [ ] Resolve user config path (`~/.config/repo/config.yaml` on Linux/macOS; platform equivalent on Windows).
-  - [ ] Fall back to bundled default `config.yaml` when user config is missing.
-  - [ ] Parse `prefixes` mapping from YAML.
-- [ ] Implement URL construction in `urlmaker.py`:
-  - [ ] Open repo at provided path.
-  - [ ] Read `origin` remote URL.
-  - [ ] Read current branch name.
-  - [ ] Trim `.git` suffix if present.
-  - [ ] Swap remote prefix to web URL prefix based on config mapping.
-  - [ ] Append `/issues` and optional `/<issue>` according to CLI flags and branch-derived issue.
-  - [ ] Raise clear errors for missing repo, missing `origin`, or unsupported URL prefixes.
-- [ ] Implement browser launch in `main.py` using `webbrowser.open`.
+- [x] Implement CLI parsing in `cli.py` using `argparse`:
+  - [x] Support positional `issue` input.
+  - [x] Support `-i/--issue`.
+  - [x] Support `-p/--path` with default `.`.
+  - [x] Reproduce help text closely.
+- [x] Implement `parse_issue_number()` in `cli.py` with regex behavior matching Go logic.
+- [x] Implement config loading in `config.py`:
+  - [x] Resolve user config path (`~/.config/repo/config.yaml` on Linux/macOS; platform equivalent on Windows).
+  - [x] Fall back to bundled default `config.yaml` when user config is missing.
+  - [x] Parse `prefixes` mapping from YAML.
+- [x] Implement URL construction in `urlmaker.py`:
+  - [x] Open repo at provided path.
+  - [x] Read `origin` remote URL.
+  - [x] Read current branch name.
+  - [x] Trim `.git` suffix if present.
+  - [x] Swap remote prefix to web URL prefix based on config mapping.
+  - [x] Append `/issues` and optional `/<issue>` according to CLI flags and branch-derived issue.
+  - [x] Raise clear errors for missing repo, missing `origin`, or unsupported URL prefixes.
+- [x] Implement browser launch in `main.py` using `webbrowser.open`.
 
 ## Phase 4: Testing for Parity
-- [ ] Port existing issue parser tests from [cmdline_test.go](../cmdline_test.go) to pytest parameterized tests.
-- [ ] Add unit tests for URL prefix swapping and `.git` trimming.
-- [ ] Add tests for issue-routing behavior:
-  - [ ] `--issue` only => `/issues`.
-  - [ ] `--issue` + explicit number => `/issues/<n>`.
-  - [ ] `--issue` + branch-embedded number => `/issues/<n>` when explicit number is absent.
-- [ ] Add negative tests:
-  - [ ] Unsupported remote URL format.
-  - [ ] Missing `origin` remote.
-  - [ ] Invalid/non-repo path.
-- [ ] Add integration tests with temporary git repositories where practical.
+- [x] Port existing issue parser tests from [cmdline_test.go](../cmdline_test.go) to pytest parameterized tests.
+- [x] Add unit tests for URL prefix swapping and `.git` trimming.
+- [x] Add tests for issue-routing behavior:
+  - [x] `--issue` only => `/issues`.
+  - [x] `--issue` + explicit number => `/issues/<n>`.
+  - [x] `--issue` + branch-embedded number => `/issues/<n>` when explicit number is absent.
+- [x] Add negative tests:
+  - [x] Unsupported remote URL format.
+  - [x] Missing `origin` remote.
+  - [x] Invalid/non-repo path.
+- [x] Add integration tests with temporary git repositories where practical.
 
 ## Phase 5: CLI and Packaging UX
-- [ ] Add executable entry point so users can run `repo` after install.
-- [ ] Ensure help text and errors are concise and actionable.
-- [ ] Document install and usage paths (`pipx install .`, `pip install .`, or editable mode).
+- [x] Add executable entry point so users can run `repo` after install.
+- [x] Ensure help text and errors are concise and actionable.
+- [x] Document install and usage paths (`pipx install .`, `pip install .`, or editable mode).
 
 ## Phase 6: Documentation and Rollout
 - [ ] Update [README.md](../README.md) with Python setup, dependencies, and usage examples.

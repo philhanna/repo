@@ -15,27 +15,58 @@ the issue page for a specific issue. The program is designed to be run from a
 command line (such as Visual Studio Code's integrated terminal) **in the
 repository**.
 
-## Usage:
+## Usage
 
 ```bash
-Launches a browser window for a page of the git remote repository.
-
-positional parameters:
-  issue          The issue number (optional). This can be:
-                 - An integer, e.g., "35"
-                 - An integer with a # prefix, e.g., "#35"
-                 - A branch name, e.g., "issue#35"
-                 - A branch name with a non-numeric suffix, e.g., "defect#35-rename"
-
-options:
-  -h, --help     Displays this help text and exits
-  -i, --issues   Display the main issues page. If the current branch contains
-                 an issue number, use that.
+repo [OPTIONS] [ISSUE]
 ```
 
-## Installation:
+Positional parameter:
+- `issue` (optional): issue number source. Accepted examples:
+  - `35`
+  - `#35`
+  - `issue#35`
+  - `defect#35-rename`
 
-cd to a temporary directory and download the repository, then install it:
+Options:
+- `-h`, `--help`: display help text and exit
+- `-i`, `--issue`: route to issues page; if no explicit issue is provided, branch name can supply issue number
+- `-p`, `--path`: path to local repository (default `.`)
+
+Examples:
+```bash
+repo
+repo --issue
+repo 35
+repo --issue defect#35-rename
+repo --path ~/src/my-repo --issue
+```
+
+## Installation
+
+### Python (current migration target)
+
+From the repository root:
+
+```bash
+# pipx (recommended for CLI tools)
+pipx install .
+
+# pip
+python -m pip install .
+
+# editable development install
+python -m pip install -e .
+```
+
+After installation, run:
+
+```bash
+repo --help
+```
+
+### Go (original implementation)
+
 ```bash
 git clone git@github.com:/philhanna/repo
 cd repo

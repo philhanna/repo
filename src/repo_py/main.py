@@ -2,13 +2,30 @@
 
 from __future__ import annotations
 
+import sys
+import webbrowser
+
 from repo_py.cli import parse_command_line
+from repo_py.urlmaker import URLBuildError, URLRequest, build_url
 
 
 def main() -> int:
-    """CLI entrypoint placeholder until URL logic is implemented."""
-    _ = parse_command_line()
-    raise SystemExit("Not implemented yet. Complete Phase 3 to enable execution.")
+    """CLI entrypoint for resolving and opening repository URLs."""
+    cmd = parse_command_line()
+    request = URLRequest(
+        issue_flag=cmd.issue_flag,
+        issue_number=cmd.issue_number,
+        path=cmd.path,
+    )
+
+    try:
+        url = build_url(request)
+    except URLBuildError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+
+    webbrowser.open(url)
+    return 0
 
 
 if __name__ == "__main__":
