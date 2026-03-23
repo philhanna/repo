@@ -111,10 +111,10 @@
 - [x] Document install and usage paths (`pipx install .`, `pip install .`, or editable mode).
 
 ## Phase 6: Documentation and Rollout
-- [ ] Update [README.md](../README.md) with Python setup, dependencies, and usage examples.
-- [ ] Add migration notes describing differences from Go implementation (if any).
-- [ ] Keep Go implementation during transition and run side-by-side validation on real repositories.
-- [ ] Define cutover criteria (all tests passing + manual smoke tests on Linux and Windows/macOS).
+- [x] Update [README.md](../README.md) with Python setup, dependencies, and usage examples.
+- [x] Add migration notes describing differences from Go implementation (if any).
+- [x] Keep Go implementation during transition and run side-by-side validation on real repositories.
+- [x] Define cutover criteria (all tests passing + manual smoke tests on Linux and Windows/macOS).
 
 ## Phase 7: Validation Checklist (Pre-Cutover)
 - [ ] Running `repo` from a git repository opens the repository home page.
@@ -124,8 +124,8 @@
 - [ ] Behavior is verified in at least one Linux and one non-Linux environment.
 
 ## Suggested Implementation Order
-- [ ] 1) Build `parse_issue_number()` + tests.
-- [ ] 2) Build config loader + tests.
-- [ ] 3) Build URL generation + tests.
-- [ ] 4) Wire CLI to URL generation + browser opener.
-- [ ] 5) Finish docs and release packaging.
+- [x] 1) Build `parse_issue_number()` + tests.
+- [x] 2) Build config loader + tests.
+- [x] 3) Build URL generation + tests.
+- [x] 4) Wire CLI to URL generation + browser opener.
+- [x] 5) Finish docs and release packaging.

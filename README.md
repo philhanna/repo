@@ -72,21 +72,61 @@ git clone git@github.com:/philhanna/repo
 cd repo
 go install .
 ```
-## Configuration:
-The program gets the URL to display by using the repository's main
-remote, which is usually `origin`.  It needs to transform the remote name
-by modifying its prefix. This is done with a map of remote prefixes
-to url prefixes.
+## Configuration
 
-This map is stored in a configuration file.
+The program resolves the browser URL from the repository's `origin` remote by
+swapping its prefix with the corresponding web URL prefix. This mapping lives in
+a YAML config file.
 
-Create a subdirectory named `repo` in your user configuration directory, which is:
+Create a subdirectory named `repo` in your user config directory and place a
+`config.yaml` file there:
+
 ```
-On Linux/Mac: $HOME/.config/repo
-On Windows:   %USERPROFILE%\AppData\Roaming\repo
+Linux / macOS:  $HOME/.config/repo/config.yaml
+Windows:        %USERPROFILE%\AppData\Roaming\repo\config.yaml
 ```
-Copy `config.yaml` to that directory and make any changes needed to recognize
-anything different in the remotes of your local repositories. 
+
+If no user config is found the bundled default (`src/repo_py/config.yaml`) is
+used as a fallback. Default prefix mappings:
+
+```yaml
+prefixes:
+  "http:": "http:"
+  "https:": "https:"
+  "git@github.com:/": "https://github.com/"
+  "git@github.com:": "https://github.com/"
+  "ssh://git@localhost": "http://localhost:3000"
+  "git@localhost:": "http://localhost:3000/"
+```
+
+## Python vs Go — Migration Notes
+
+The Python implementation targets full behavioral parity with the original Go
+version. Known differences are listed below:
+
+| Aspect | Go | Python |
+|---|---|---|
+| Git access | `go-git` library | `git` subprocess (stdlib) |
+| Config fallback | embedded via `go:embed` | bundled `config.yaml` next to package |
+| Browser launch | `github.com/pkg/browser` | stdlib `webbrowser.open` |
+| Error output | `log.Fatal` to stderr | concise message to stderr, exit code 1 |
+| Entry point | `go install .` then `repo` | `pip install .` then `repo` |
+
+No behavioral differences in issue-number parsing, URL prefix mapping, or
+branch-derived issue routing were intentionally introduced.
+
+## Cutover Criteria
+
+The Python implementation is ready to replace the Go version when:
+
+- [ ] All 19+ automated tests pass (`pytest -q`).
+- [ ] Manual smoke test: `repo` opens repository home page from a real git repo.
+- [ ] Manual smoke test: `repo --issue` opens the issues page.
+- [ ] Manual smoke test: `repo 35` opens issue #35.
+- [ ] Manual smoke test: branch-derived issue number is used when `--issue` is
+      set and no explicit number is given.
+- [ ] Verified on Linux.
+- [ ] Verified on macOS or Windows.
 
 [idGoReportCard]: https://goreportcard.com/report/github.com/philhanna/repo
 [idPkgGoDev]: https://pkg.go.dev/github.com/philhanna/repo
