@@ -57,12 +57,24 @@ python -m pip install .
 
 # editable development install
 python -m pip install -e .
+
+# editable development install with test dependencies
+python -m pip install -e .[dev]
 ```
 
 After installation, run:
 
 ```bash
 repo --help
+```
+
+## Testing
+
+Install development dependencies, then run:
+
+```bash
+python -m pip install -e .[dev]
+pytest -q
 ```
 
 ### Go (original implementation)

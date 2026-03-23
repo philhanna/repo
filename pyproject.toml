@@ -4,12 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "repo-py"
-version = "0.1.0"
+version = "3.0.0"
 description = "Open repository and issue pages from local git repositories"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "PyYAML>=6.0",
+  "PyYAML>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
 ]
 
 [project.scripts]
