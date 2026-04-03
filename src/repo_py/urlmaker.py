@@ -75,6 +75,8 @@ def build_url_from_parts(
             issue_number = branch_issue_number
 
     url = remote_url
+    if url.startswith("ssh://git@github.com/"):
+        url = "git@github.com:/" + url.removeprefix("ssh://git@github.com/")
     if url.endswith(".git"):
         url = url[: -len(".git")]
 
