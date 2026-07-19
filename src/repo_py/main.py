@@ -22,6 +22,7 @@ def main() -> int:
     """
     cmd = parse_command_line()
     request = URLRequest(
+        actions_flag=cmd.actions_flag,
         issue_flag=cmd.issue_flag,
         issue_number=cmd.issue_number,
         path=cmd.path,

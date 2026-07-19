@@ -6,6 +6,7 @@ from repo_py.urlmaker import URLBuildError, URLRequest, build_url_from_parts, sw
 def test_urlrequest_defaults() -> None:
     request = URLRequest()
     assert request.path == "."
+    assert request.actions_flag is False
     assert request.issue_flag is False
     assert request.issue_number == 0
 
@@ -61,6 +62,18 @@ def test_build_url_issue_flag_without_number_routes_to_issues() -> None:
         prefix_map,
     )
     assert have == "https://github.com/philhanna/repo/issues"
+
+
+def test_build_url_actions_flag_routes_to_actions() -> None:
+    request = URLRequest(actions_flag=True, path=".")
+    prefix_map = {"git@github.com:": "https://github.com/"}
+    have = build_url_from_parts(
+        request,
+        "git@github.com:philhanna/repo.git",
+        "main",
+        prefix_map,
+    )
+    assert have == "https://github.com/philhanna/repo/actions"
 
 
 def test_build_url_raises_on_unsupported_prefix() -> None:

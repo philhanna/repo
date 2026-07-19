@@ -10,10 +10,10 @@
 ## Overview
 
 This program opens a browser window with some page in Github for this
-repository. This can be either the main repository page, the issues page, or
-the issue page for a specific issue. The program is designed to be run from a
-command line (such as Visual Studio Code's integrated terminal) **in the
-repository**.
+repository. This can be the main repository page, the actions page, the issues
+page, or the issue page for a specific issue. The program is designed to be
+run from a command line (such as Visual Studio Code's integrated terminal)
+**in the repository**.
 
 ## Usage
 
@@ -30,12 +30,14 @@ Positional parameter:
 
 Options:
 - `-h`, `--help`: display help text and exit
+- `-a`, `--actions`: route to the repository actions page
 - `-i`, `--issue`: route to issues page; if no explicit issue is provided, branch name can supply issue number
 - `-p`, `--path`: path to local repository (default `.`)
 
 Examples:
 ```bash
 repo
+repo --actions
 repo --issue
 repo 35
 repo --issue defect#35-rename

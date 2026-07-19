@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning].
 The format is based on [Keep a Changelog].
 	
 ## [Unreleased]
+- Add `-a`/`--actions` option to open the repository Actions page
 
 ## [3.0.0] - 2026-03-23
 - Python packaging: update runtime dependency minimum to `PyYAML>=6.0.2`

@@ -2,7 +2,7 @@
 
 import pytest
 
-from repo_py.cli import parse_issue_number
+from repo_py.cli import parse_command_line, parse_issue_number
 
 
 @pytest.mark.parametrize(
@@ -20,3 +20,11 @@ from repo_py.cli import parse_issue_number
 )
 def test_parse_issue_number(value: str, want: int) -> None:
     assert parse_issue_number(value) == want
+
+
+@pytest.mark.parametrize("option", ["-a", "--actions"])
+def test_parse_actions_flag(option: str) -> None:
+    command = parse_command_line([option])
+
+    assert command.actions_flag is True
+    assert command.issue_flag is False

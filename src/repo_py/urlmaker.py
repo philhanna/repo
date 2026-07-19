@@ -15,6 +15,8 @@ class URLRequest:
     """Encapsulates the intent and context needed to build a repository URL.
 
     Attributes:
+        actions_flag: When ``True``, the resulting URL should point to the
+            repository actions page.
         issue_flag: When ``True``, the resulting URL should point to the
             issues page rather than the repository root or a specific branch.
         issue_number: Explicit issue number to append to the issues URL, or
@@ -28,6 +30,7 @@ class URLRequest:
     issue_flag: bool = False
     issue_number: int = 0
     path: str = "."
+    actions_flag: bool = False
 
 
 class URLBuildError(RuntimeError):
@@ -114,8 +117,9 @@ def build_url_from_parts(
 
     Normalises the remote URL (stripping ``.git`` suffix and converting
     ``ssh://`` variants to SCP-style ``git@`` form), applies the first
-    matching prefix substitution from *prefix_map*, and appends an
-    ``/issues[/<number>]`` path when :attr:`URLRequest.issue_flag` is set.
+    matching prefix substitution from *prefix_map*, and appends either
+    ``/actions`` when :attr:`URLRequest.actions_flag` is set or
+    ``/issues[/<number>]`` when :attr:`URLRequest.issue_flag` is set.
 
     If :attr:`URLRequest.issue_flag` is ``True`` and
     :attr:`URLRequest.issue_number` is ``0``, an issue number is extracted
@@ -154,7 +158,9 @@ def build_url_from_parts(
     else:
         raise URLBuildError(f"Unsupported url type: {url}")
 
-    if request.issue_flag:
+    if request.actions_flag:
+        url += "/actions"
+    elif request.issue_flag:
         url += "/issues"
         if issue_number != 0:
             url += f"/{issue_number}"

@@ -12,6 +12,8 @@ class CommandLine:
     """Parsed representation of command-line arguments.
 
     Attributes:
+        actions_flag: True when the ``-a``/``--actions`` flag was supplied,
+            indicating the user wants to navigate to the actions page.
         issue_flag: True when the ``-i``/``--issue`` flag was supplied,
             indicating the user wants to navigate to the issues page.
         issue_number: Numeric issue identifier extracted from the positional
@@ -23,6 +25,7 @@ class CommandLine:
     issue_flag: bool = False
     issue_number: int = 0
     path: str = "."
+    actions_flag: bool = False
 
 
 def parse_issue_number(value: str) -> int:
@@ -72,7 +75,15 @@ def parse_command_line(argv: list[str] | None = None) -> CommandLine:
             "'issue#35', or 'defect#35-rename'."
         ),
     )
-    parser.add_argument(
+    page_group = parser.add_mutually_exclusive_group()
+    page_group.add_argument(
+        "-a",
+        "--actions",
+        action="store_true",
+        dest="actions_flag",
+        help="Display the repository actions page.",
+    )
+    page_group.add_argument(
         "-i",
         "--issue",
         action="store_true",
@@ -88,6 +99,7 @@ def parse_command_line(argv: list[str] | None = None) -> CommandLine:
 
     args = parser.parse_args(argv)
     return CommandLine(
+        actions_flag=args.actions_flag,
         issue_flag=args.issue_flag,
         issue_number=parse_issue_number(args.issue),
         path=args.path,
