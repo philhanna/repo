@@ -4,7 +4,12 @@ This project adheres to [Semantic Versioning].
 The format is based on [Keep a Changelog].
 	
 ## [Unreleased]
+
+## [3.1.0] - 2026-08-31
 - Add `-a`/`--actions` option to open the repository Actions page
+- Replace config-file prefix mapping with algorithmic URL rewrite
+- Reintroduce `.env` config support, scoped to the Gitea host/port override
+- Handle `ssh:` URLs correctly
 
 ## [3.0.0] - 2026-03-23
 - Python packaging: update runtime dependency minimum to `PyYAML>=6.0.2`
@@ -25,7 +30,8 @@ First version
 
 [Semantic Versioning]: http://semver.org
 [Keep a Changelog]: http://keepachangelog.com
-[Unreleased]: https://github.com/philhanna/issues/compare/3.0.0..HEAD
+[Unreleased]: https://github.com/philhanna/issues/compare/3.1.0..HEAD
+[3.1.0]: https://github.com/philhanna/issues/compare/3.0.0..3.1.0
 [3.0.0]: https://github.com/philhanna/issues/compare/v2.2.1..3.0.0
 [v2.2.0]: https://github.com/philhanna/issues/compare/v2.1.0..v2.2.0
 [v2.1.0]: https://github.com/philhanna/issues/compare/v2.0.0..v2.1.0
