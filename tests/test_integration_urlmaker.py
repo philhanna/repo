@@ -7,7 +7,6 @@ import subprocess
 
 import pytest
 
-import repo_py.urlmaker as urlmaker
 from repo_py.urlmaker import URLBuildError, URLRequest, build_url
 
 
@@ -47,17 +46,11 @@ def test_build_url_missing_origin_raises(tmp_path: Path) -> None:
         build_url(request)
 
 
-def test_build_url_from_temp_repo_with_origin(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_build_url_from_temp_repo_with_origin(tmp_path: Path) -> None:
     repo = tmp_path / "repo-with-origin"
     repo.mkdir()
     _init_repo_with_commit(repo)
     _git(repo, "remote", "add", "origin", "git@github.com:philhanna/repo.git")
-
-    monkeypatch.setattr(
-        urlmaker,
-        "load_prefix_map",
-        lambda: {"git@github.com:": "https://github.com/"},
-    )
 
     request = URLRequest(path=str(repo), issue_flag=True, issue_number=12)
     have = build_url(request)

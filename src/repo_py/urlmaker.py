@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import re
 import subprocess
 
 from repo_py.cli import parse_issue_number
-from repo_py.config import load_prefix_map
+
+_SCP_LIKE_RE = re.compile(r"^(?:[\w.-]+@)?([^/:]+):/?(.+)$")
 
 
 @dataclass(slots=True)
@@ -40,22 +42,6 @@ class URLBuildError(RuntimeError):
     unknown remote URL scheme, etc.) with a human-readable message suitable
     for display on ``stderr``.
     """
-
-
-def swap_prefix(url: str, from_prefix: str, to_prefix: str) -> str:
-    """Replace the leading URL prefix with a target prefix.
-
-    Args:
-        url: Original URL whose prefix should be replaced.
-        from_prefix: The prefix to remove from the start of *url*.
-        to_prefix: The replacement prefix to prepend.
-
-    Returns:
-        New URL string with *from_prefix* replaced by *to_prefix*.  If
-        *url* does not start with *from_prefix*, the original string is
-        returned unchanged.
-    """
-    return to_prefix + url.removeprefix(from_prefix)
 
 
 def _run_git(path: str, args: list[str]) -> str:
@@ -111,15 +97,13 @@ def build_url_from_parts(
     request: URLRequest,
     remote_url: str,
     branch_name: str,
-    prefix_map: dict[str, str],
 ) -> str:
-    """Build the destination URL from known git and config values.
+    """Build the destination URL from known git values.
 
-    Normalises the remote URL (stripping ``.git`` suffix and converting
-    ``ssh://`` variants to SCP-style ``git@`` form), applies the first
-    matching prefix substitution from *prefix_map*, and appends either
-    ``/actions`` when :attr:`URLRequest.actions_flag` is set or
-    ``/issues[/<number>]`` when :attr:`URLRequest.issue_flag` is set.
+    Normalises the remote URL to its ``https://`` web equivalent (see
+    :func:`normalize_remote_url`) and appends either ``/actions`` when
+    :attr:`URLRequest.actions_flag` is set or ``/issues[/<number>]`` when
+    :attr:`URLRequest.issue_flag` is set.
 
     If :attr:`URLRequest.issue_flag` is ``True`` and
     :attr:`URLRequest.issue_number` is ``0``, an issue number is extracted
@@ -130,14 +114,13 @@ def build_url_from_parts(
         remote_url: Raw remote URL returned by ``git remote get-url origin``.
         branch_name: Current branch returned by
             ``git rev-parse --abbrev-ref HEAD``.
-        prefix_map: Mapping of git URL prefixes to web URL prefixes, as
-            loaded by :func:`~repo_py.config.load_prefix_map`.
 
     Returns:
         Fully formed HTTPS URL ready to open in a browser.
 
     Raises:
-        URLBuildError: If no entry in *prefix_map* matches *remote_url*.
+        URLBuildError: If *remote_url* does not match a recognized git
+            remote form.
     """
     issue_number = request.issue_number
     if request.issue_flag and issue_number == 0:
@@ -145,18 +128,7 @@ def build_url_from_parts(
         if branch_issue_number != 0:
             issue_number = branch_issue_number
 
-    url = remote_url
-    if url.startswith("ssh://git@github.com/"):
-        url = "git@github.com:/" + url.removeprefix("ssh://git@github.com/")
-    if url.endswith(".git"):
-        url = url[: -len(".git")]
-
-    for prefix, new_prefix in prefix_map.items():
-        if url.startswith(prefix):
-            url = swap_prefix(url, prefix, new_prefix)
-            break
-    else:
-        raise URLBuildError(f"Unsupported url type: {url}")
+    url = normalize_remote_url(remote_url)
 
     if request.actions_flag:
         url += "/actions"
@@ -168,12 +140,52 @@ def build_url_from_parts(
     return url
 
 
+def normalize_remote_url(url: str) -> str:
+    """Convert a git remote URL into its ``https://`` web equivalent.
+
+    Already-``http(s)://`` URLs are returned unchanged. SCP-like remotes
+    (``user@host:path``, including the ``user@host:/path`` form ``git``
+    itself normalises ``ssh://`` GitHub remotes to) and ``ssh://`` remotes
+    (``ssh://[user@]host[:port]/path``) are rewritten to ``https://host/path``,
+    dropping the user, scheme, and port.
+
+    Args:
+        url: Raw remote URL, as returned by ``git remote get-url origin``.
+
+    Returns:
+        The corresponding ``https://`` web URL.
+
+    Raises:
+        URLBuildError: If *url* does not match a recognized git remote form.
+    """
+    if url.endswith(".git"):
+        url = url[: -len(".git")]
+
+    if url.startswith("http://") or url.startswith("https://"):
+        return url
+
+    if url.startswith("ssh://"):
+        rest = url[len("ssh://") :]
+        host_and_maybe_user, _, path = rest.partition("/")
+        host = host_and_maybe_user.rpartition("@")[2]
+        host = host.partition(":")[0]
+        if host and path:
+            return f"https://{host}/{path}"
+        raise URLBuildError(f"Unsupported url type: {url}")
+
+    match = _SCP_LIKE_RE.match(url)
+    if match:
+        host, path = match.groups()
+        return f"https://{host}/{path}"
+
+    raise URLBuildError(f"Unsupported url type: {url}")
+
+
 def build_url(request: URLRequest) -> str:
     """Build a browser URL from repository state and CLI intent.
 
     Validates the repository path, queries git for the current branch and
-    origin remote URL, loads the prefix map from config, then delegates to
-    :func:`build_url_from_parts`.
+    origin remote URL, then delegates to :func:`build_url_from_parts`.
 
     Args:
         request: Parsed CLI intent describing what page to open.
@@ -194,4 +206,4 @@ def build_url(request: URLRequest) -> str:
     repo_path = str(repo_path_obj)
     branch_name = _run_git(repo_path, ["rev-parse", "--abbrev-ref", "HEAD"])
     remote_url = _run_git(repo_path, ["remote", "get-url", "origin"])
-    return build_url_from_parts(request, remote_url, branch_name, load_prefix_map())
+    return build_url_from_parts(request, remote_url, branch_name)

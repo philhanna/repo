@@ -86,32 +86,18 @@ git clone git@github.com:/philhanna/repo
 cd repo
 go install .
 ```
-## Configuration
+## URL resolution
 
-The program resolves the browser URL from the repository's `origin` remote by
-swapping its prefix with the corresponding web URL prefix. This mapping lives in
-a YAML config file.
+The program resolves the browser URL from the repository's `origin` remote
+automatically, with no configuration file:
 
-Create a subdirectory named `repo` in your user config directory and place a
-`config.yaml` file there:
+- `http://` and `https://` remotes are used as-is.
+- SCP-like remotes (`user@host:path`) and `ssh://` remotes
+  (`ssh://[user@]host[:port]/path`) are rewritten to `https://host/path`,
+  dropping the user, scheme, and port.
 
-```
-Linux / macOS:  $HOME/.config/repo/config.yaml
-Windows:        %USERPROFILE%\AppData\Roaming\repo\config.yaml
-```
-
-If no user config is found the bundled default (`src/repo_py/config.yaml`) is
-used as a fallback. Default prefix mappings:
-
-```yaml
-prefixes:
-  "http:": "http:"
-  "https:": "https:"
-  "git@github.com:/": "https://github.com/"
-  "git@github.com:": "https://github.com/"
-  "ssh://git@localhost": "http://localhost:3000"
-  "git@localhost:": "http://localhost:3000/"
-```
+This works for any host — GitHub, a self-hosted Gitea/Forgejo instance, etc. —
+without per-host configuration.
 
 ## Python vs Go — Migration Notes
 
@@ -121,7 +107,7 @@ version. Known differences are listed below:
 | Aspect | Go | Python |
 |---|---|---|
 | Git access | `go-git` library | `git` subprocess (stdlib) |
-| Config fallback | embedded via `go:embed` | bundled `config.yaml` next to package |
+| Prefix mapping | config file (embedded via `go:embed` + user override) | algorithmic URL rewrite, no config file |
 | Browser launch | `github.com/pkg/browser` | stdlib `webbrowser.open` |
 | Error output | `log.Fatal` to stderr | concise message to stderr, exit code 1 |
 | Entry point | `go install .` then `repo` | `pip install .` then `repo` |

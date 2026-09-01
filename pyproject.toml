@@ -8,9 +8,7 @@ version = "3.0.0"
 description = "Open repository, Actions, and issue pages from local git repositories"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-  "PyYAML>=6.0.2",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
@@ -22,10 +20,6 @@ repo = "repo_py.main:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-include-package-data = true
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.setuptools.package-data]
-repo_py = ["config.yaml"]
