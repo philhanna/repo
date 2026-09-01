@@ -1,10 +1,11 @@
-"""Command-line argument parsing for the repo Python port."""
+"""Command-line argument parsing (driving adapter) for the repo Python port."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 import argparse
-import re
+
+from repo_py.domain.services import parse_issue_number
 
 
 @dataclass(slots=True)
@@ -26,27 +27,6 @@ class CommandLine:
     issue_number: int = 0
     path: str = "."
     actions_flag: bool = False
-
-
-def parse_issue_number(value: str) -> int:
-    """Extract the first issue number from a string; return 0 if not found.
-
-    Accepts a variety of formats such as ``"35"``, ``"#35"``, ``"issue#35"``,
-    or ``"defect#35-rename"``.  The search is case-insensitive.
-
-    Args:
-        value: Raw string that may contain an issue number.
-
-    Returns:
-        The first integer found in *value*, or ``0`` when no digits are
-        present or *value* is empty.
-    """
-    if not value:
-        return 0
-    match = re.search(r"#?(\d+)", value.upper())
-    if not match:
-        return 0
-    return int(match.group(1))
 
 
 def parse_command_line(argv: list[str] | None = None) -> CommandLine:

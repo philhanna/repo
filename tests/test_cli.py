@@ -2,7 +2,8 @@
 
 import pytest
 
-from repo_py.cli import parse_command_line, parse_issue_number
+from repo_py.adapters.inbound.cli import parse_command_line
+from repo_py.domain.services import parse_issue_number
 
 
 @pytest.mark.parametrize(

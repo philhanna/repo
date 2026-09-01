@@ -7,7 +7,9 @@ import subprocess
 
 import pytest
 
-from repo_py.urlmaker import URLBuildError, URLRequest, build_url
+from repo_py.domain.errors import URLBuildError
+from repo_py.domain.models import URLRequest
+from repo_py.main import build_url
 
 
 def _git(repo_path: Path, *args: str) -> str:

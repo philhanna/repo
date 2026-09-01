@@ -26,4 +26,4 @@ include-package-data = true
 where = ["src"]
 
 [tool.setuptools.package-data]
-repo_py = ["config.env"]
+"repo_py.adapters.outbound" = ["config.env"]

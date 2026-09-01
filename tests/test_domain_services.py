@@ -1,7 +1,8 @@
-"""Tests for URL maker behavior."""
+"""Tests for domain URL-building services."""
 
-from repo_py.config import GiteaConfig
-from repo_py.urlmaker import URLBuildError, URLRequest, build_url_from_parts, normalize_remote_url
+from repo_py.domain.errors import URLBuildError
+from repo_py.domain.models import GiteaConfig, URLRequest
+from repo_py.domain.services import build_url_from_parts, normalize_remote_url
 
 
 def test_urlrequest_defaults() -> None:
