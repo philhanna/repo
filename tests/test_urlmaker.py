@@ -1,5 +1,6 @@
 """Tests for URL maker behavior."""
 
+from repo_py.config import GiteaConfig
 from repo_py.urlmaker import URLBuildError, URLRequest, build_url_from_parts, normalize_remote_url
 
 
@@ -34,6 +35,35 @@ def test_normalize_remote_url_passes_through_https() -> None:
 def test_normalize_remote_url_arbitrary_host() -> None:
     have = normalize_remote_url("git@gitea.example.com:group/project.git")
     assert have == "https://gitea.example.com/group/project"
+
+
+def test_normalize_remote_url_scp_like_gitea_override() -> None:
+    have = normalize_remote_url(
+        "git@localhost:philhanna/repo.git",
+        GiteaConfig(host="localhost", port=3000),
+    )
+    assert have == "http://localhost:3000/philhanna/repo"
+
+
+def test_normalize_remote_url_ssh_scheme_gitea_override() -> None:
+    have = normalize_remote_url(
+        "ssh://git@localhost/philhanna/repo",
+        GiteaConfig(host="localhost", port=3000),
+    )
+    assert have == "http://localhost:3000/philhanna/repo"
+
+
+def test_normalize_remote_url_gitea_override_ignores_other_hosts() -> None:
+    have = normalize_remote_url(
+        "git@github.com:philhanna/repo.git",
+        GiteaConfig(host="localhost", port=3000),
+    )
+    assert have == "https://github.com/philhanna/repo"
+
+
+def test_normalize_remote_url_without_gitea_config_uses_https() -> None:
+    have = normalize_remote_url("git@localhost:philhanna/repo.git")
+    assert have == "https://localhost/philhanna/repo"
 
 
 def test_normalize_remote_url_raises_on_unsupported_form() -> None:

@@ -89,15 +89,38 @@ go install .
 ## URL resolution
 
 The program resolves the browser URL from the repository's `origin` remote
-automatically, with no configuration file:
+automatically:
 
 - `http://` and `https://` remotes are used as-is.
 - SCP-like remotes (`user@host:path`) and `ssh://` remotes
   (`ssh://[user@]host[:port]/path`) are rewritten to `https://host/path`,
   dropping the user, scheme, and port.
 
-This works for any host — GitHub, a self-hosted Gitea/Forgejo instance, etc. —
-without per-host configuration.
+This works for any host — GitHub, a self-hosted Gitea instance, etc. —
+without configuration.
+
+### Gitea override
+
+A self-hosted Gitea instance's web UI often runs on `http://` with a
+non-standard port, which the generic HTTPS rewrite above gets wrong. To
+handle this, create a subdirectory named `repo` in your user config
+directory and place a `config.env` file there:
+
+```
+Linux / macOS:  $HOME/.config/repo/config.env
+Windows:        %USERPROFILE%\AppData\Roaming\repo\config.env
+```
+
+```
+GITEA_HOST="localhost"
+GITEA_PORT="3000"
+```
+
+Remotes whose host matches `GITEA_HOST` are rewritten to
+`http://<GITEA_HOST>:<GITEA_PORT>/path` instead of the generic `https://`
+form; every other host is unaffected. If no user config is found, the
+bundled default (`src/repo_py/config.env`, same values as above) is used as
+a fallback.
 
 ## Python vs Go — Migration Notes
 
@@ -107,7 +130,7 @@ version. Known differences are listed below:
 | Aspect | Go | Python |
 |---|---|---|
 | Git access | `go-git` library | `git` subprocess (stdlib) |
-| Prefix mapping | config file (embedded via `go:embed` + user override) | algorithmic URL rewrite, no config file |
+| Prefix mapping | config file (embedded via `go:embed` + user override) | algorithmic URL rewrite, with a `config.env` override only for the Gitea host/port |
 | Browser launch | `github.com/pkg/browser` | stdlib `webbrowser.open` |
 | Error output | `log.Fatal` to stderr | concise message to stderr, exit code 1 |
 | Entry point | `go install .` then `repo` | `pip install .` then `repo` |

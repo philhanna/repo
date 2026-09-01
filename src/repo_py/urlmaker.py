@@ -8,6 +8,7 @@ import re
 import subprocess
 
 from repo_py.cli import parse_issue_number
+from repo_py.config import GiteaConfig, load_gitea_config
 
 _SCP_LIKE_RE = re.compile(r"^(?:[\w.-]+@)?([^/:]+):/?(.+)$")
 
@@ -97,10 +98,11 @@ def build_url_from_parts(
     request: URLRequest,
     remote_url: str,
     branch_name: str,
+    gitea_config: GiteaConfig | None = None,
 ) -> str:
     """Build the destination URL from known git values.
 
-    Normalises the remote URL to its ``https://`` web equivalent (see
+    Normalises the remote URL to its web equivalent (see
     :func:`normalize_remote_url`) and appends either ``/actions`` when
     :attr:`URLRequest.actions_flag` is set or ``/issues[/<number>]`` when
     :attr:`URLRequest.issue_flag` is set.
@@ -114,9 +116,14 @@ def build_url_from_parts(
         remote_url: Raw remote URL returned by ``git remote get-url origin``.
         branch_name: Current branch returned by
             ``git rev-parse --abbrev-ref HEAD``.
+        gitea_config: Host/port override for a self-hosted Gitea instance,
+            as loaded by :func:`~repo_py.config.load_gitea_config`. When
+            *remote_url*'s host matches, the URL is built as
+            ``http://<host>:<port>/...`` instead of the generic
+            ``https://<host>/...`` form.
 
     Returns:
-        Fully formed HTTPS URL ready to open in a browser.
+        Fully formed URL ready to open in a browser.
 
     Raises:
         URLBuildError: If *remote_url* does not match a recognized git
@@ -128,7 +135,7 @@ def build_url_from_parts(
         if branch_issue_number != 0:
             issue_number = branch_issue_number
 
-    url = normalize_remote_url(remote_url)
+    url = normalize_remote_url(remote_url, gitea_config)
 
     if request.actions_flag:
         url += "/actions"
@@ -140,20 +147,22 @@ def build_url_from_parts(
     return url
 
 
-def normalize_remote_url(url: str) -> str:
-    """Convert a git remote URL into its ``https://`` web equivalent.
+def normalize_remote_url(url: str, gitea_config: GiteaConfig | None = None) -> str:
+    """Convert a git remote URL into its web equivalent.
 
     Already-``http(s)://`` URLs are returned unchanged. SCP-like remotes
     (``user@host:path``, including the ``user@host:/path`` form ``git``
     itself normalises ``ssh://`` GitHub remotes to) and ``ssh://`` remotes
-    (``ssh://[user@]host[:port]/path``) are rewritten to ``https://host/path``,
-    dropping the user, scheme, and port.
+    (``ssh://[user@]host[:port]/path``) have their user and scheme dropped.
+    The result is ``https://host/path``, unless *gitea_config* is given and
+    its host matches, in which case it is ``http://host:port/path``.
 
     Args:
         url: Raw remote URL, as returned by ``git remote get-url origin``.
+        gitea_config: Host/port override for a self-hosted Gitea instance.
 
     Returns:
-        The corresponding ``https://`` web URL.
+        The corresponding web URL.
 
     Raises:
         URLBuildError: If *url* does not match a recognized git remote form.
@@ -164,19 +173,39 @@ def normalize_remote_url(url: str) -> str:
     if url.startswith("http://") or url.startswith("https://"):
         return url
 
+    host, path = _extract_host_and_path(url)
+
+    if gitea_config is not None and host == gitea_config.host:
+        return f"http://{host}:{gitea_config.port}/{path}"
+
+    return f"https://{host}/{path}"
+
+
+def _extract_host_and_path(url: str) -> tuple[str, str]:
+    """Extract the host and path from an ``ssh://`` or SCP-like git remote.
+
+    Args:
+        url: Remote URL, with any ``.git`` suffix and ``http(s)://`` scheme
+            already ruled out by the caller.
+
+    Returns:
+        A ``(host, path)`` tuple.
+
+    Raises:
+        URLBuildError: If *url* does not match a recognized git remote form.
+    """
     if url.startswith("ssh://"):
         rest = url[len("ssh://") :]
         host_and_maybe_user, _, path = rest.partition("/")
         host = host_and_maybe_user.rpartition("@")[2]
         host = host.partition(":")[0]
         if host and path:
-            return f"https://{host}/{path}"
+            return host, path
         raise URLBuildError(f"Unsupported url type: {url}")
 
     match = _SCP_LIKE_RE.match(url)
     if match:
-        host, path = match.groups()
-        return f"https://{host}/{path}"
+        return match.groups()
 
     raise URLBuildError(f"Unsupported url type: {url}")
 
@@ -185,13 +214,14 @@ def build_url(request: URLRequest) -> str:
     """Build a browser URL from repository state and CLI intent.
 
     Validates the repository path, queries git for the current branch and
-    origin remote URL, then delegates to :func:`build_url_from_parts`.
+    origin remote URL, loads the Gitea host/port override from config, then
+    delegates to :func:`build_url_from_parts`.
 
     Args:
         request: Parsed CLI intent describing what page to open.
 
     Returns:
-        Fully formed HTTPS URL ready to open in a browser.
+        Fully formed URL ready to open in a browser.
 
     Raises:
         URLBuildError: If the repository path does not exist or is not a
@@ -206,4 +236,4 @@ def build_url(request: URLRequest) -> str:
     repo_path = str(repo_path_obj)
     branch_name = _run_git(repo_path, ["rev-parse", "--abbrev-ref", "HEAD"])
     remote_url = _run_git(repo_path, ["remote", "get-url", "origin"])
-    return build_url_from_parts(request, remote_url, branch_name)
+    return build_url_from_parts(request, remote_url, branch_name, load_gitea_config())
